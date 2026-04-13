@@ -1,0 +1,95 @@
+import java.security.MessageDigest;
+import java.util.Scanner;
+class Mobile {
+    private String pinHash;
+    private int attempts = 0;
+    private final int MAX_ATTEMPTS = 3;
+    private boolean isLocked = false;
+    public Mobile(String pin) {
+        if (!pin.matches("\\d{4}")) {
+            throw new IllegalArgumentException("PIN must be 4 digits");
+        }
+        this.pinHash = hash(pin);
+    }
+    private String hash(String pin) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = md.digest(pin.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes)
+                sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void unlock(String input) {
+        if (isLocked) {
+            System.out.println("Phone is LOCKED");
+            return;
+        }
+        if (hash(input).equals(pinHash)) {
+            System.out.println("Phone Unlocked");
+            attempts = 0;
+        } else {
+            attempts++;
+            System.out.println("Incorrect PIN");
+
+            if (attempts == MAX_ATTEMPTS) {
+                isLocked = true;
+                System.out.println("Phone LOCKED after 3 failed attempts");
+            }
+        }
+    }
+    public void changePin(String oldPin, String newPin) {
+        if (isLocked) {
+            System.out.println("Phone is LOCKED");
+            return;
+        }
+        if (!newPin.matches("\\d{4}")) {
+            System.out.println("New PIN must be exactly 4 digits");
+            return;
+        }
+        if (hash(oldPin).equals(pinHash)) {
+            pinHash = hash(newPin);
+            System.out.println("PIN changed successfully");
+        } else {
+            System.out.println("Wrong old PIN");
+        }
+    }
+}
+public class MobilePhoneLock {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Set your 4-digit PIN: ");
+        String pin = sc.next();
+        Mobile phone = new Mobile(pin);
+        while (true) {
+            System.out.println("\n1. Unlock");
+            System.out.println("2. Change PIN");
+            System.out.println("3. Exit");
+            System.out.print("Choose: ");
+            int choice = sc.nextInt();
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter PIN: ");
+                    String inputPin = sc.next();
+                    phone.unlock(inputPin);
+                    break;
+
+                case 2:
+                    System.out.print("Enter old PIN: ");
+                    String oldPin = sc.next();
+                    System.out.print("Enter new PIN: ");
+                    String newPin = sc.next();
+                    phone.changePin(oldPin, newPin);
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid choice");
+            }
+        }
+    }
+}
