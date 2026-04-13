@@ -1,0 +1,95 @@
+import java.util.Scanner;
+public class Hotel {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int category, item, qty;
+        int price = 0;
+        int total = 0;
+        char more;
+        do {
+            System.out.println("\n CHOWDHARY'S HOTEL MENU ");
+            System.out.println("1. Veg Items");
+            System.out.println("2. Non-Veg Items");
+            System.out.println("3. Rice Items");
+            System.out.println("4. Desserts");
+            System.out.println("5. Ice Creams");
+            System.out.println("6. Juices");
+            System.out.print("Select Category: ");
+            category = scanner.nextInt();
+            switch(category) {
+                case 1:
+                    System.out.println("1. Paneer Butter Masala - 180");
+                    System.out.println("2. Gobi Manchurian - 140");
+                    System.out.println("3. Mushroom Dry - 160");
+                    item = scanner.nextInt();
+                    switch(item){
+                        case 1: price = 180; break;
+                        case 2: price = 140; break;
+                        case 3: price = 160;break;
+                        default: System.out.println("Invalid item");
+                    }
+                    break;
+                case 2:
+                    System.out.println("1. Chicken Biryani - 220");
+                    System.out.println("2. Chicken 65 - 190");
+                    System.out.println("3. Mutton Biryani - 250");
+                    item = scanner.nextInt();
+                    switch(item){
+                        case 1: price = 220; break;
+                        case 2: price = 190; break;
+                        case 3: price = 250; break;
+                        default: System.out.println("Invalid item");
+                    }
+                    break;
+                case 3:
+                    System.out.println("1. Gobi Fried Rice  - 100");
+                    System.out.println("2. Curd Rice - 80");
+                     System.out.println("3. Veg Noodles - 90");
+                    item = scanner.nextInt();
+                    switch(item){
+                        case 1: price = 90; break;
+                        case 2: price = 80; break;
+                        case 3: price = 90; break;
+                    }
+                    break;
+                case 4:
+                    System.out.println("1. Gulab Jamun - 60");
+                    System.out.println("2. Chocolate Cake - 90");
+                    item = scanner.nextInt();
+                    switch(item){
+                        case 1: price = 60; break;
+                        case 2: price = 90; break;
+                    }
+                    break;
+                case 5:
+                    System.out.println("1. Vanilla Ice Cream - 50");
+                    System.out.println("2. Chocolate Ice Cream - 60");
+                    item = scanner.nextInt();
+                    switch(item){
+                        case 1: price = 50; break;
+                        case 2: price = 60; break;
+                    }
+                    break;
+                case 6:
+                    System.out.println("1. Mango Juice - 70");
+                    System.out.println("2. Orange Juice - 60");
+                    item = scanner.nextInt();
+                    switch(item){
+                        case 1: price = 70; break;
+                        case 2: price = 65; break;
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid Category");
+            }
+            System.out.print("Enter Quantity: ");
+            qty = scanner.nextInt();
+            total = total + (price * qty);
+            System.out.print("Do you want more food? (y/n): ");
+            more = scanner.next().charAt(0);
+        } while(more == 'y' || more == 'Y');
+        System.out.println("\n RESTAURANT BILL ");
+        System.out.println("Total Amount = " + total);
+        System.out.println("Thank You! Visit Again ");
+    }
+}
