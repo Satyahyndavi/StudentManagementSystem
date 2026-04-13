@@ -1,0 +1,298 @@
+import java.util.*;
+public class Number {
+    static Scanner sc = new Scanner(System.in);
+    static Random rand = new Random();
+    static class Puzzle {
+        int[] series;
+        int answer;
+        String hint;
+        String explanation;
+    }
+    static ArrayList<String> leaderboardNames = new ArrayList<>();
+    static ArrayList<Integer> leaderboardScores = new ArrayList<>();
+    public static void main(String[] args) {
+        System.out.println("==== SMART NUMBER PUZZLE ENGINE ====");
+        System.out.print("Enter player name: ");
+        String name = sc.nextLine();
+        int score = 0;
+        int playerHealth = 100;
+        int bossHealth = 100;
+        HashSet<Integer> usedPatterns = new HashSet<>();
+        int totalLevels = 6;
+        for (int level = 1; level <= totalLevels; level++) {
+            System.out.println("\n----------------------------");
+            System.out.println("LEVEL " + level);
+            int difficulty;
+            int timeLimit;
+            if (level <= 2) {
+                difficulty = 1;
+                timeLimit = 15;
+                System.out.println("Difficulty: EASY");
+            } else if (level <= 4) {
+                difficulty = 2;
+                timeLimit = 10;
+                System.out.println("Difficulty: MEDIUM");
+            } else {
+                difficulty = 3;
+                timeLimit = 7;
+                System.out.println("Difficulty: HARD");
+            }
+
+            Puzzle p = generatePuzzle(difficulty, usedPatterns);
+
+            System.out.print("Series: ");
+            for (int v : p.series) System.out.print(v + " ");
+            System.out.println("?");
+
+            System.out.println("Type answer or 'hint'");
+            System.out.println("Time limit: " + timeLimit + " seconds");
+
+            long start = System.currentTimeMillis();
+
+            String input = sc.next();
+
+            long end = System.currentTimeMillis();
+            long timeTaken = (end - start) / 1000;
+
+            if (timeTaken > timeLimit) {
+                System.out.println("Time Up!");
+                playerHealth -= 20;
+                continue;
+            }
+
+            int userAnswer;
+
+            if (input.equalsIgnoreCase("hint")) {
+                System.out.println("Hint: " + p.hint);
+                score -= 5;
+                System.out.print("Enter answer: ");
+                userAnswer = sc.nextInt();
+            } else {
+                userAnswer = Integer.parseInt(input);
+            }
+
+            if (userAnswer == p.answer) {
+                System.out.println("Correct!");
+                System.out.println("Explanation: " + p.explanation);
+                score += 10;
+                bossHealth -= 20;
+            } else {
+                System.out.println("Wrong! Correct answer: " + p.answer);
+                System.out.println("Explanation: " + p.explanation);
+                playerHealth -= 20;
+            }
+
+            System.out.println("Player Health: " + playerHealth);
+            System.out.println("Boss Health: " + bossHealth);
+            System.out.println("Score: " + score);
+
+            if (playerHealth <= 0) {
+                System.out.println("\nYou Lost!");
+                break;
+            }
+
+            if (bossHealth <= 0) {
+                System.out.println("\nBoss Defeated!");
+                break;
+            }
+        }
+
+        System.out.println("\nFinal Score: " + score);
+
+        leaderboardNames.add(name);
+        leaderboardScores.add(score);
+
+        printLeaderboard();
+    }
+
+    static Puzzle generatePuzzle(int difficulty, HashSet<Integer> used) {
+
+        Puzzle p = new Puzzle();
+
+        int type;
+
+        do {
+            type = rand.nextInt(8);
+        } while (used.contains(type));
+
+        used.add(type);
+
+        switch (type) {
+
+            case 0:
+                arithmetic(p);
+                break;
+
+            case 1:
+                geometric(p);
+                break;
+
+            case 2:
+                fibonacci(p);
+                break;
+
+            case 3:
+                squareSeries(p);
+                break;
+
+            case 4:
+                cubeSeries(p);
+                break;
+
+            case 5:
+                multiplyAdd(p);
+                break;
+
+            case 6:
+                increasingDiff(p);
+                break;
+
+            case 7:
+                triangular(p);
+                break;
+        }
+
+        return p;
+    }
+
+    static void arithmetic(Puzzle p) {
+
+        int start = rand.nextInt(10) + 1;
+        int diff = rand.nextInt(5) + 2;
+
+        p.series = new int[5];
+
+        for (int i = 0; i < 5; i++) {
+            p.series[i] = start;
+            start += diff;
+        }
+
+        p.answer = start;
+        p.hint = "Numbers increase by constant difference";
+        p.explanation = "Arithmetic progression with difference " + diff;
+    }
+
+    static void geometric(Puzzle p) {
+
+        int start = rand.nextInt(5) + 2;
+        int ratio = rand.nextInt(3) + 2;
+
+        p.series = new int[5];
+
+        for (int i = 0; i < 5; i++) {
+            p.series[i] = start;
+            start *= ratio;
+        }
+
+        p.answer = start;
+        p.hint = "Numbers multiply by same value";
+        p.explanation = "Geometric series with ratio " + ratio;
+    }
+
+    static void fibonacci(Puzzle p) {
+
+        int a = 1;
+        int b = 1;
+
+        p.series = new int[5];
+        p.series[0] = a;
+        p.series[1] = b;
+
+        for (int i = 2; i < 5; i++) {
+            int c = a + b;
+            p.series[i] = c;
+            a = b;
+            b = c;
+        }
+
+        p.answer = a + b;
+        p.hint = "Each number is sum of previous two";
+        p.explanation = "Fibonacci sequence";
+    }
+
+    static void squareSeries(Puzzle p) {
+
+        p.series = new int[5];
+
+        for (int i = 1; i <= 5; i++) {
+            p.series[i - 1] = i * i;
+        }
+
+        p.answer = 36;
+        p.hint = "Numbers follow n^2 pattern";
+        p.explanation = "Square numbers";
+    }
+
+    static void cubeSeries(Puzzle p) {
+
+        p.series = new int[5];
+
+        for (int i = 1; i <= 5; i++) {
+            p.series[i - 1] = i * i * i;
+        }
+
+        p.answer = 216;
+        p.hint = "Numbers follow n^3 pattern";
+        p.explanation = "Cube numbers";
+    }
+
+    static void multiplyAdd(Puzzle p) {
+
+        int start = rand.nextInt(5) + 2;
+
+        p.series = new int[5];
+
+        for (int i = 0; i < 5; i++) {
+            p.series[i] = start;
+            start = start * 2 + 1;
+        }
+
+        p.answer = start;
+        p.hint = "Numbers double and increase slightly";
+        p.explanation = "Next = previous * 2 + 1";
+    }
+
+    static void increasingDiff(Puzzle p) {
+
+        int start = rand.nextInt(5) + 3;
+        int diff = 2;
+
+        p.series = new int[5];
+
+        for (int i = 0; i < 5; i++) {
+            p.series[i] = start;
+            start += diff;
+            diff++;
+        }
+
+        p.answer = start;
+        p.hint = "Difference between numbers keeps increasing";
+        p.explanation = "Increasing difference pattern";
+    }
+
+    static void triangular(Puzzle p) {
+
+        p.series = new int[5];
+
+        int sum = 0;
+
+        for (int i = 1; i <= 5; i++) {
+            sum += i;
+            p.series[i - 1] = sum;
+        }
+
+        p.answer = sum + 6;
+        p.hint = "Numbers are cumulative sums";
+        p.explanation = "Triangular number sequence";
+    }
+
+    static void printLeaderboard() {
+
+        System.out.println("\n------ LEADERBOARD ------");
+
+        for (int i = 0; i < leaderboardNames.size(); i++) {
+            System.out.println((i + 1) + ". " + leaderboardNames.get(i)
+                    + " - " + leaderboardScores.get(i));
+        }
+    }
+}
